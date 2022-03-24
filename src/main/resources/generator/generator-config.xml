@@ -42,8 +42,9 @@
                              type="XMLMAPPER"/>
 
 <!--        靠！！！原来是这里被注释掉了！！-->
-        <table tableName="demo" domainObjectName="Demo"/>
-        <!--<table tableName="ebook"/>-->
+<!--        <table tableName="demo" domainObjectName="Demo"/>-->
+<!--         这个可以不写：domainObjectName="Ebook"-->
+        <table tableName="ebook"/>
         <!--<table tableName="category"/>-->
         <!--<table tableName="doc"/>-->
         <!--<table tableName="content"/>-->
