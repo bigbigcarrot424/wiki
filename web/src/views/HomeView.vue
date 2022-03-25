@@ -49,7 +49,7 @@
       <a-layout-content
               :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
-        <a-list item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 16, column: 4 }">
+        <a-list item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 16, column: 3 }">
           <template #renderItem="{ item }">
             <a-list-item key="item.name">
               <template #actions>
@@ -118,7 +118,7 @@ export default defineComponent({
     const ebooks = ref();
     const ebooks1 = reactive({books:[]})
     onMounted(()=>{
-      axios.get('http://localhost:8080/ebook/list?name=Spring').then((response)=>{
+      axios.get('http://localhost:8080/ebook/list').then((response)=>{
         ebooks.value = response.data.content;
         ebooks1.books = response.data.content;
       })
@@ -134,3 +134,13 @@ export default defineComponent({
   }
 });
 </script>
+
+<style scoped>
+  .ant-avatar {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8%;
+    margin: 5px 0;
+  }
+</style>
