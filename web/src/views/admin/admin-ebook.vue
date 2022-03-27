@@ -44,7 +44,7 @@
       const ebooks = ref();
       const pagination = ref({
         current: 1,
-        pageSize: 10,
+        pageSize: 2,
         total: 0
       });
       const loading = ref(false);
@@ -85,6 +85,7 @@
       /**
        * 数据查询
        **/
+      //这个params参数可以起任意的名字
       const handleQuery = (params: any) => {
         loading.value = true;
         // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
@@ -108,13 +109,20 @@
             message.error(data.message);
           }
         });*/
-        axios.get("/ebook/list", params).then((response) => {
+        axios.get("/ebook/list", {
+          // 这里可以用params: params ，前面是get请求的参数，后面是传入的参数名字，因为一般不会将参数都用到，所以可以分开传进去
+          params:{
+            page: params.page,
+            size: params.size,
+          }
+        }).then((response) => {
           loading.value = false;
           const data = response.data;
-          ebooks.value = data.content;
+          ebooks.value = data.content.list;
 
           //重置分页按钮
           pagination.value.current = params.page
+          pagination.value.total = data.content.total
         })
       };
 
@@ -233,7 +241,11 @@
 
       onMounted(() => {
         // handleQueryCategory();
-        handleQuery({});
+        handleQuery({
+          //这里要跟后端的请求名字对应起来
+          page: 1,
+          size: pagination.value.pageSize
+        });
       });
 
       return {
