@@ -5,6 +5,7 @@ import com.fangshuo.wiki.domain.EbookExample;
 import com.fangshuo.wiki.mapper.EbookMapper;
 import com.fangshuo.wiki.req.EbookReq;
 import com.fangshuo.wiki.resp.EbookResp;
+import com.fangshuo.wiki.resp.PageResp;
 import com.fangshuo.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -23,7 +24,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req){
+    public PageResp<EbookResp> list(EbookReq req){
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         //当name不为空时
@@ -31,7 +32,8 @@ public class EbookService {
             criteria.andNameLike("%" + req.getName() + "%");
         }
 
-        PageHelper.startPage(1, 3);
+        PageHelper.startPage(req.getPage(), req.getSize());
+        //PageHelper会作用到这个查询上
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
@@ -46,6 +48,9 @@ public class EbookService {
             respList.add(ebookResp);
         }*/
 
-        return respList;
+        PageResp<EbookResp> pageResp = new PageResp<>();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(respList);
+        return pageResp;
     }
 }
