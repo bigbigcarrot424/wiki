@@ -16,7 +16,7 @@
     components: {
       TheHeader,
       TheFooter
-    }
+    },
   });
 </script>
 

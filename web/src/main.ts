@@ -12,6 +12,7 @@ axios.defaults.baseURL = process.env.VUE_APP_SERVER
 /**
  * axios拦截器
  */
+
 axios.interceptors.request.use(function (config) {
     console.log('请求参数：', config);
     return config;
@@ -34,5 +35,5 @@ for(const i in icons){
     app.component(i, icons[i])
 }
 
-console.log('环境：',process.env.NODE_ENV)
-console.log('服务端：',process.env.VUE_APP_SERVER)
+// console.log('环境：',process.env.NODE_ENV)
+// console.log('服务端：',process.env.VUE_APP_SERVER)
