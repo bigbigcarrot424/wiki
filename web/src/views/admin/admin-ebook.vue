@@ -16,7 +16,7 @@
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
-            <a-button type="primary" @click="edit">
+            <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
             <a-button type="danger">
@@ -28,7 +28,23 @@
     </a-layout-content>
   </a-layout>
   <a-modal v-model:visible="visible" title="Basic Modal" @ok="handleOk" :confirm-loading="modalLoading">
-    <p>test</p>
+    <a-form :model="ebook" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="封面">
+        <a-input v-model:value="ebook.cover" />
+      </a-form-item>
+      <a-form-item label="名称">
+        <a-input v-model:value="ebook.name" />
+      </a-form-item>
+      <a-form-item label="分类一">
+        <a-input v-model:value="ebook.category1Id" />
+      </a-form-item>
+      <a-form-item label="分类二">
+        <a-input v-model:value="ebook.category2Id" />
+      </a-form-item>
+      <a-form-item label="描述">
+        <a-input v-model:value="ebook.desc" type="textarea" />
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 
@@ -86,6 +102,9 @@
 
       const visible = ref<boolean>(false);
 
+
+      // ----------- 表单 -----------
+      const ebook = ref({});
       const showModal = () => {
         visible.value = true;
       };
@@ -95,10 +114,13 @@
         visible.value = false;
       };
 
-      const edit = () =>{
-        visible.value = true
-      }
-
+      /**
+       * 编辑
+       */
+      const edit = (record: any) =>{
+        visible.value = true;
+        ebook.value = record;
+      };
 
 
       /**
@@ -157,6 +179,7 @@
         showModal,
         handleOk,
         edit,
+        ebook,
         /*getCategoryName,
 
         edit,
