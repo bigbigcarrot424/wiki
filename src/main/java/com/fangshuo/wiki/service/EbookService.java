@@ -8,6 +8,7 @@ import com.fangshuo.wiki.req.EbookSaveReq;
 import com.fangshuo.wiki.resp.EbookQueryResp;
 import com.fangshuo.wiki.resp.PageResp;
 import com.fangshuo.wiki.util.CopyUtil;
+import com.fangshuo.wiki.util.SnowFlake;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -24,6 +25,9 @@ public class EbookService {
 
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     public PageResp<EbookQueryResp> list(EbookQueryReq req){
         EbookExample ebookExample = new EbookExample();
@@ -62,6 +66,7 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())){
             //如果是空，那么新增
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         }else{
             //更新
