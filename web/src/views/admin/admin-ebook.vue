@@ -110,8 +110,21 @@
       };
 
       const handleOk = (e: MouseEvent) => {
-        console.log(e);
-        visible.value = false;
+        loading.value = false;
+
+
+        axios.post("/ebook/save", ebook.value).then((response) => {
+          const data = response.data;
+          if (data.success){
+            loading.value = false;
+            visible.value = false;
+          }
+        //  重新加载列表
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize
+          });
+        })
       };
 
       /**

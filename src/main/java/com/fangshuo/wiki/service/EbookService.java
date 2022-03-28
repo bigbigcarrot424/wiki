@@ -3,8 +3,9 @@ package com.fangshuo.wiki.service;
 import com.fangshuo.wiki.domain.Ebook;
 import com.fangshuo.wiki.domain.EbookExample;
 import com.fangshuo.wiki.mapper.EbookMapper;
-import com.fangshuo.wiki.req.EbookReq;
-import com.fangshuo.wiki.resp.EbookResp;
+import com.fangshuo.wiki.req.EbookQueryReq;
+import com.fangshuo.wiki.req.EbookSaveReq;
+import com.fangshuo.wiki.resp.EbookQueryResp;
 import com.fangshuo.wiki.resp.PageResp;
 import com.fangshuo.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
@@ -24,7 +25,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req){
+    public PageResp<EbookQueryResp> list(EbookQueryReq req){
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         //当name不为空时
@@ -40,7 +41,7 @@ public class EbookService {
         LOG.info("总行数：{}",pageInfo.getTotal());
         LOG.info("总页数：{}",pageInfo.getPages());
 
-        List<EbookResp> respList = CopyUtil.copyList(ebookList, EbookResp.class);
+        List<EbookQueryResp> respList = CopyUtil.copyList(ebookList, EbookQueryResp.class);
         /*List<EbookResp> respList = new ArrayList<>();
         for (Ebook ebook : ebookList) {
             EbookResp ebookResp = new EbookResp();
@@ -48,9 +49,23 @@ public class EbookService {
             respList.add(ebookResp);
         }*/
 
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(respList);
         return pageResp;
+    }
+
+    /**
+     * 保存
+     */
+    public void save(EbookSaveReq req){
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if (ObjectUtils.isEmpty(req.getId())){
+            //如果是空，那么新增
+            ebookMapper.insert(ebook);
+        }else{
+            //更新
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
     }
 }
