@@ -16,7 +16,7 @@
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
-            <a-button type="primary" @click="edit(record)">
+            <a-button type="primary" @click="edit">
               编辑
             </a-button>
             <a-button type="danger">
@@ -27,7 +27,9 @@
       </a-table>
     </a-layout-content>
   </a-layout>
-
+  <a-modal v-model:visible="visible" title="Basic Modal" @ok="handleOk" :confirm-loading="modalLoading">
+    <p>test</p>
+  </a-modal>
 </template>
 
 <script lang="ts">
@@ -82,33 +84,29 @@
         }
       ];
 
+      const visible = ref<boolean>(false);
+
+      const showModal = () => {
+        visible.value = true;
+      };
+
+      const handleOk = (e: MouseEvent) => {
+        console.log(e);
+        visible.value = false;
+      };
+
+      const edit = () =>{
+        visible.value = true
+      }
+
+
+
       /**
        * 数据查询
        **/
       //这个params参数可以起任意的名字
       const handleQuery = (params: any) => {
         loading.value = true;
-        // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-        // ebooks.value = [];
-        /*axios.get("/ebook/list", {
-          params: {
-            page: params.page,
-            size: params.size,
-            name: param.value.name
-          }
-        }).then((response) => {
-          loading.value = false;
-          const data = response.data;
-          if (data.success) {
-            ebooks.value = data.content.list;
-
-            // 重置分页按钮
-            pagination.value.current = params.page;
-            pagination.value.total = data.content.total;
-          } else {
-            message.error(data.message);
-          }
-        });*/
         axios.get("/ebook/list", {
           // 这里可以用params: params ，前面是get请求的参数，后面是传入的参数名字，因为一般不会将参数都用到，所以可以分开传进去
           params:{
@@ -137,108 +135,6 @@
         });
       };
 
-      /*// -------- 表单 ---------
-      /!**
-       * 数组，[100, 101]对应：前端开发 / Vue
-       *!/
-      const categoryIds = ref();
-      const ebook = ref();
-      const modalVisible = ref(false);
-      const modalLoading = ref(false);
-      const handleModalOk = () => {
-        modalLoading.value = true;
-        ebook.value.category1Id = categoryIds.value[0];
-        ebook.value.category2Id = categoryIds.value[1];
-        axios.post("/ebook/save", ebook.value).then((response) => {
-          modalLoading.value = false;
-          const data = response.data; // data = commonResp
-          if (data.success) {
-            modalVisible.value = false;
-
-            // 重新加载列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize,
-            });
-          } else {
-            message.error(data.message);
-          }
-        });
-      };
-
-      /!**
-       * 编辑
-       *!/
-      const edit = (record: any) => {
-        modalVisible.value = true;
-        // ebook.value = Tool.copy(record);
-        categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
-      };
-
-      /!**
-       * 新增
-       *!/
-      const add = () => {
-        modalVisible.value = true;
-        ebook.value = {};
-      };
-
-      const handleDelete = (id: number) => {
-        axios.delete("/ebook/delete/" + id).then((response) => {
-          const data = response.data; // data = commonResp
-          if (data.success) {
-            // 重新加载列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize,
-            });
-          } else {
-            message.error(data.message);
-          }
-        });
-      };
-
-      const level1 =  ref();
-      let categorys: any;
-      /!**
-       * 查询所有分类
-       **!/
-      const handleQueryCategory = () => {
-        loading.value = true;
-        axios.get("/category/all").then((response) => {
-          loading.value = false;
-          const data = response.data;
-          if (data.success) {
-            categorys = data.content;
-            console.log("原始数组：", categorys);
-
-            level1.value = [];
-            // level1.value = Tool.array2Tree(categorys, 0);
-            console.log("树形结构：", level1.value);
-
-            // 加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
-            handleQuery({
-              page: 1,
-              size: pagination.value.pageSize,
-            });
-          } else {
-            message.error(data.message);
-          }
-        });
-      };
-
-      const getCategoryName = (cid: number) => {
-        // console.log(cid)
-        let result = "";
-        categorys.forEach((item: any) => {
-          if (item.id === cid) {
-            // return item.name; // 注意，这里直接return不起作用
-            result = item.name;
-          }
-        });
-        return result;
-      };*/
-
       onMounted(() => {
         // handleQueryCategory();
         handleQuery({
@@ -256,6 +152,11 @@
         loading,
         handleTableChange,
         handleQuery,
+
+        visible,
+        showModal,
+        handleOk,
+        edit,
         /*getCategoryName,
 
         edit,
