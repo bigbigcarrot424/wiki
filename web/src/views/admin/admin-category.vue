@@ -24,7 +24,7 @@
       <a-table
               :columns="columns"
               :row-key="record => record.id"
-              :data-source="categorys"
+              :data-source="level1"
               :loading="loading"
               :pagination="false"
       >
@@ -153,6 +153,8 @@
         });
       };
 
+      const level1 = ref();
+
       /**
        * 数据查询
        **/
@@ -160,10 +162,14 @@
       const handleQuery = () => {
         loading.value = true;
         axios.get("/category/all").then((response) => {
-          loading.value = false;
           const data = response.data;
+          loading.value = false;
           if (data.success){
             categorys.value = data.content;
+            console.log("原始数据", categorys.value);
+            level1.value = [];
+            level1.value = Tool.array2Tree(categorys.value, 0);
+            console.log("树形结构", level1.value);
           }else {
             message.error(data.message);
           }
@@ -177,7 +183,8 @@
 
       return {
         param,
-        categorys,
+        level1,
+        // categorys,
         columns,
         loading,
         handleQuery,
@@ -189,6 +196,7 @@
         category,
         add,
         handleDelete,
+
       }
     }
   });
