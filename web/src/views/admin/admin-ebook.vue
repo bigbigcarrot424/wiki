@@ -24,7 +24,7 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger">
+            <a-button type="danger" @click="handleDelete(record.id)">
               删除
             </a-button>
           </a-space>
@@ -135,7 +135,7 @@
       /**
        * 编辑
        */
-      const edit = (record: any) =>{
+      const edit = (record: any) => {
         visible.value = true;
         ebook.value = record;
       };
@@ -143,11 +143,22 @@
       /**
        *  新增
        */
-      const add = (record: any) =>{
+      const add = (record: any) => {
         visible.value = true;
         ebook.value = {};
       };
 
+      const handleDelete = (id: number) => {
+        axios.delete("/ebook/delete/" + id).then((response) => {
+          const data = response.data;
+          if(data.success) {
+            handleQuery({
+              page: pagination.value.current,
+              size: pagination.value.pageSize,
+            });
+          }
+        });
+      };
 
       /**
        * 数据查询
@@ -207,6 +218,7 @@
         edit,
         ebook,
         add,
+        handleDelete,
         /*getCategoryName,
 
         edit,
