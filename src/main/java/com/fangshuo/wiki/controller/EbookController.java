@@ -9,6 +9,7 @@ import com.fangshuo.wiki.service.EbookService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/ebook")
@@ -18,7 +19,7 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp ebookList(EbookQueryReq req){
+    public CommonResp ebookList(@Valid EbookQueryReq req){
         CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp<>();
         PageResp<EbookQueryResp> list = ebookService.list(req);
         resp.setContent(list);
@@ -28,7 +29,7 @@ public class EbookController {
     @PostMapping("/save")
     // 使用post请求时，前面要加上@RequestBody，这个注解对应的是json方式的提交，需要加这个@RequestBody才能接收到。
     // 两种不同方式的表单提交：1. application/json 2. application/x-www-form-urlencoded 这个是表单方式的提交
-    public CommonResp save(@RequestBody EbookSaveReq req){
+    public CommonResp save(@RequestBody @Valid EbookSaveReq req){
         CommonResp<Object> resp = new CommonResp<>();
         ebookService.save(req);
         return resp;

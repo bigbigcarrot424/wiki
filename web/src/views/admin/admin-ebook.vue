@@ -76,7 +76,7 @@
       const ebooks = ref();
       const pagination = ref({
         current: 1,
-        pageSize: 2,
+        pageSize: 3,
         total: 0
       });
       const loading = ref(false);
@@ -126,18 +126,19 @@
       const handleOk = (e: MouseEvent) => {
         loading.value = false;
 
-
         axios.post("/ebook/save", ebook.value).then((response) => {
           const data = response.data;
           if (data.success){
             loading.value = false;
             visible.value = false;
+            //  重新加载列表
+            handleQuery({
+              page: pagination.value.current,
+              size: pagination.value.pageSize,
+            });
+          }else {
+            message.error(data.message);
           }
-        //  重新加载列表
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize
-          });
         })
       };
 
@@ -184,11 +185,14 @@
         }).then((response) => {
           loading.value = false;
           const data = response.data;
-          ebooks.value = data.content.list;
-
-          //重置分页按钮
-          pagination.value.current = params.page
-          pagination.value.total = data.content.total
+          if (data.success){
+            ebooks.value = data.content.list;
+            //重置分页按钮
+            pagination.value.current = params.page
+            pagination.value.total = data.content.total
+          }else {
+            message.error(data.message);
+          }
         })
       };
 
