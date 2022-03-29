@@ -33,6 +33,7 @@ public class CategoryService {
         CategoryExample categoryExample = new CategoryExample();
         CategoryExample.Criteria criteria = categoryExample.createCriteria();
 
+        categoryExample.setOrderByClause("sort asc");
         PageHelper.startPage(req.getPage(), req.getSize());
         //PageHelper会作用到这个查询上
         List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
@@ -53,6 +54,15 @@ public class CategoryService {
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(respList);
         return pageResp;
+    }
+    public List<CategoryQueryResp> all(){
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
+
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+        List<CategoryQueryResp> respList = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+
+        return respList;
     }
 
     /**

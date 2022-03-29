@@ -10,12 +10,7 @@
               @finishFailed="handleFinishFailed"
       >
         <a-form-item>
-          <a-input v-model:value="param.name" placeholder="请输入分类名称">
-            <template #prefix><edit-two-tone/></template>
-          </a-input>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+          <a-button type="primary" @click="handleQuery()">
             查询
           </a-button>
         </a-form-item>
@@ -30,9 +25,8 @@
               :columns="columns"
               :row-key="record => record.id"
               :data-source="categorys"
-              :pagination="pagination"
               :loading="loading"
-              @change="handleTableChange"
+              :pagination="false"
       >
         <template #cover="{ text: cover }">
           <img v-if="cover" :src="cover" alt="avatar" />
@@ -86,11 +80,6 @@
       const param = ref();
       param.value = {};
       const categorys = ref();
-      const pagination = ref({
-        current: 1,
-        pageSize: 8,
-        total: 0
-      });
       const loading = ref(false);
 
       const columns = [
@@ -132,10 +121,7 @@
           if (data.success){
             visible.value = false;
             //  重新加载列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize,
-            });
+            handleQuery();
           }else {
             message.error(data.message);
           }
@@ -162,10 +148,7 @@
         axios.delete("/category/delete/" + id).then((response) => {
           const data = response.data;
           if(data.success) {
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize,
-            });
+            handleQuery();
           }
         });
       };
@@ -174,56 +157,29 @@
        * 数据查询
        **/
       //这个params参数可以起任意的名字
-      const handleQuery = (params: any) => {
+      const handleQuery = () => {
         loading.value = true;
-        axios.get("/category/list", {
-          // 这里可以用params: params ，前面是get请求的参数，后面是传入的参数名字，因为一般不会将参数都用到，所以可以分开传进去
-          params:{
-            page: params.page,
-            size: params.size,
-            name: param.value.name
-          }
-        }).then((response) => {
+        axios.get("/category/all").then((response) => {
           loading.value = false;
           const data = response.data;
           if (data.success){
-            categorys.value = data.content.list;
-            //重置分页按钮
-            pagination.value.current = params.page
-            pagination.value.total = data.content.total
+            categorys.value = data.content;
           }else {
             message.error(data.message);
           }
         })
       };
 
-      /**
-       * 表格点击页码时触发
-       */
-      const handleTableChange = (pagination: any) => {
-        console.log("看看自带的分页参数都有啥：" + pagination);
-        handleQuery({
-          page: pagination.current,
-          size: pagination.pageSize
-        });
-      };
-
       onMounted(() => {
         // handleQueryCategory();
-        handleQuery({
-          //这里要跟后端的请求名字对应起来
-          page: 1,
-          size: pagination.value.pageSize
-        });
+        handleQuery();
       });
 
       return {
         param,
         categorys,
-        pagination,
         columns,
         loading,
-        handleTableChange,
         handleQuery,
 
         visible,
@@ -233,20 +189,6 @@
         category,
         add,
         handleDelete,
-
-        /*getCategoryName,
-
-        edit,
-        add,
-
-        category,
-        modalVisible,
-        modalLoading,
-        handleModalOk,
-        categoryIds,
-        level1,
-
-        handleDelete*/
       }
     }
   });
