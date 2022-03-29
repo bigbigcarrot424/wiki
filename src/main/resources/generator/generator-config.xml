@@ -43,9 +43,9 @@
 
 <!--        靠！！！原来是这里被注释掉了！！-->
 <!--        <table tableName="demo" domainObjectName="Demo"/>-->
-<!--         这个可以不写：domainObjectName="Ebook"-->
-        <table tableName="ebook"/>
-        <!--<table tableName="category"/>-->
+<!--         这个可以不写：domainObjectName="Ebook", 不用重新生成的就可以注释掉-->
+<!--        <table tableName="ebook"/>-->
+        <table tableName="category"/>
         <!--<table tableName="doc"/>-->
         <!--<table tableName="content"/>-->
         <!--<table tableName="user"/>-->
