@@ -202,6 +202,8 @@
       //这个params参数可以起任意的名字
       const handleQuery = (params: any) => {
         loading.value = true;
+        // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+        ebook.value = [];
         axios.get("/ebook/list", {
           // 这里可以用params: params ，前面是get请求的参数，后面是传入的参数名字，因为一般不会将参数都用到，所以可以分开传进去
           params:{
