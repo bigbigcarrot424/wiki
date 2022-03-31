@@ -30,7 +30,8 @@
       <a-layout-content
               :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
-        <a-list item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 16, column: 3 }">
+        <div class="welcome" v-show="isShowWelcome">欢迎使用fangshuo知识库</div>
+        <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 16, column: 3 }">
           <template #renderItem="{ item }">
             <a-list-item key="item.name">
               <template #actions>
@@ -112,9 +113,13 @@ export default defineComponent({
     const ebooks = ref();
     const ebooks1 = reactive({books:[]})
 
-    const handleClick = () => {
+    const isShowWelcome = ref(true);
+
+    const handleClick = (value: any) => {
       console.log("menu click");
+      isShowWelcome.value = value.key === 'welcome';
     }
+
 
     onMounted(()=>{
       handleQueryCategory();
@@ -139,6 +144,7 @@ export default defineComponent({
       handleQueryCategory,
       handleClick,
       level1,
+      isShowWelcome,
     }
   }
 });
