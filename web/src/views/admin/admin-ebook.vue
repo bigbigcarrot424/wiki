@@ -227,6 +227,9 @@
 
       const level1 = ref();
       let categorys: any;
+      /**
+       * 查询所有分类
+       */
 
       const handleQueryCategory = () => {
         loading.value = true;
@@ -248,11 +251,13 @@
 
       const getCategoryName = (cid: number) => {
         let result = "";
-        categorys.forEach((item: any) => {
-          if(item.id === cid){
-            result = item.name;
-          }
-        });
+        if(categorys){
+          categorys.forEach((item: any) => {
+            if(item.id === cid){
+              result = item.name;
+            }
+          });
+        }
         return result;
       };
 
