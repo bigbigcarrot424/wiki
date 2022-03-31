@@ -114,27 +114,40 @@ export default defineComponent({
     const ebooks1 = reactive({books:[]})
 
     const isShowWelcome = ref(true);
-
-    const handleClick = (value: any) => {
-      console.log("menu click");
-      isShowWelcome.value = value.key === 'welcome';
-    }
+    let categoryId2 = 0;
 
 
-    onMounted(()=>{
-      handleQueryCategory();
+    const handleQueryEbook = () => {
       axios.get('/ebook/list', {
         params:{
           page: 1,
           size: 1000,
+          categoryId2: categoryId2,
         }
       }).then((response)=>{
         ebooks.value = response.data.content.list;
         // ebooks1.books = response.data.content.list;
         // console.log(response.data)
-      })
+      });
+    };
 
+    const handleClick = (value: any) => {
+      console.log("menu click");
+      if(value.key === 'welcome'){
+        isShowWelcome.value = true;
+      }else{
+        categoryId2 = value.key;
+        isShowWelcome.value = false;
+        handleQueryEbook();
+      }
+    }
+
+
+    onMounted(()=>{
+      handleQueryCategory();
+      // handleQueryEbook(); 初始的时候不需要查询电子书
     })
+
     return{
       listData,
       pagination,
@@ -145,6 +158,7 @@ export default defineComponent({
       handleClick,
       level1,
       isShowWelcome,
+      handleQueryEbook,
     }
   }
 });
