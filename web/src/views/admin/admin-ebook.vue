@@ -37,6 +37,9 @@
         <template #cover="{ text: cover }">
           <img v-if="cover" :src="cover" alt="avatar" />
         </template>
+        <template v-slot:category="{text, record}">
+          <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+        </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
             <a-button type="primary" @click="edit(record)">
@@ -70,7 +73,6 @@
       <a-form-item label="分类">
         <a-cascader v-model:value="categoryIds" :field-names="{label: 'name', value: 'id', children: 'children'}" :options="level1" placeholder="Please select" />
       </a-form-item>
-
       <a-form-item label="描述">
         <a-input v-model:value="ebook.description" type="textarea" />
       </a-form-item>
@@ -108,14 +110,8 @@
           dataIndex: 'name'
         },
         {
-          title: '分类一',
-          dataIndex: 'category1Id',
-          slots: { customRender: 'category1Id' }
-        },
-        {
-          title: '分类二',
-          dataIndex: 'category2Id',
-          slots: { customRender: 'category2Id' }
+          title: '分类',
+          slots: { customRender: 'category' }
         },
         {
           title: '文档数',
@@ -228,6 +224,7 @@
       };
 
       const level1 = ref();
+      let categorys: any;
 
       const handleQueryCategory = () => {
         loading.value = true;
@@ -235,7 +232,7 @@
           loading.value = false;
           const data = response.data;
           if(data.success) {
-            const categorys = data.content;
+            categorys = data.content;
             console.log("原始数组:", categorys);
 
             level1.value = [];
@@ -246,6 +243,16 @@
           }
         })
       }
+
+      const getCategoryName = (cid: number) => {
+        let result = "";
+        categorys.forEach((item: any) => {
+          if(item.id === cid){
+            result = item.name;
+          }
+        });
+        return result;
+      };
 
       /**
        * 表格点击页码时触发
@@ -285,6 +292,8 @@
         handleDelete,
         categoryIds,
         level1,
+
+        getCategoryName,
 
         /*getCategoryName,
 
