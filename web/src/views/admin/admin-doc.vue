@@ -171,6 +171,7 @@
       const edit = (record: any) => {
         visible.value = true;
         doc.value = Tool.copy(record);
+        handleQueryContent();
 
         //不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
         treeSelectData.value = Tool.copy(level1.value);
@@ -178,11 +179,6 @@
 
         //为树添加一个“无”
         treeSelectData.value.unshift({id: 0, name: '无'});
-        // setTimeout(function () {
-        //   //创建富文本编辑器，不然js获取不到这个元素
-        //   // const editor = new E('#content');
-        //   editor.create();
-        // }, 100);
       };
 
       /**
@@ -338,6 +334,21 @@
             level1.value = [];
             level1.value = Tool.array2Tree(docs.value, 0);
             console.log("树形结构", level1.value);
+          }else {
+            message.error(data.message);
+          }
+        })
+      };
+
+      /**
+       * 内容查询
+       */
+      //这个params参数可以起任意的名字
+      const handleQueryContent = () => {
+        axios.get("/doc/find-content/" + doc.value.id).then((response) => {
+          const data = response.data;
+          if (data.success){
+            editor.txt.html(data.content);
           }else {
             message.error(data.message);
           }

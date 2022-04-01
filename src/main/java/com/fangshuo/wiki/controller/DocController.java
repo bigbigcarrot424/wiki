@@ -2,8 +2,8 @@ package com.fangshuo.wiki.controller;
 
 import com.fangshuo.wiki.req.DocQueryReq;
 import com.fangshuo.wiki.req.DocSaveReq;
-import com.fangshuo.wiki.resp.DocQueryResp;
 import com.fangshuo.wiki.resp.CommonResp;
+import com.fangshuo.wiki.resp.DocQueryResp;
 import com.fangshuo.wiki.resp.PageResp;
 import com.fangshuo.wiki.service.DocService;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +50,15 @@ public class DocController {
         CommonResp<Object> resp = new CommonResp<>();
         List<String> list = Arrays.asList(idsStr.split(","));
         docService.delete(list);
+        return resp;
+    }
+
+    @GetMapping("/find-content/{id}")
+    public CommonResp findContent(@PathVariable Long id){
+        //这里返回的是String类型，所以泛型要使用String
+        CommonResp<String> resp = new CommonResp<>();
+        String content = docService.findContent(id);
+        resp.setContent(content);
         return resp;
     }
 }
