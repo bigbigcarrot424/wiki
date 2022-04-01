@@ -77,6 +77,9 @@
       <a-form-item label="顺序">
         <a-input v-model:value="doc.sort" />
       </a-form-item>
+      <a-form-item label="内容">
+        <div id="content"></div>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -88,6 +91,8 @@
   import {Tool} from "@/util/tool";
   import {useRoute} from "vue-router";
   import {ExclamationCircleOutlined} from "@ant-design/icons-vue/lib";
+  import E from 'wangeditor'
+
 
   export default defineComponent({
     name: 'AdminDoc',
@@ -130,6 +135,8 @@
         visible.value = true;
       };
 
+
+
       const handleOk = (e: MouseEvent) => {
         loading.value = false;
 
@@ -159,6 +166,11 @@
 
         //为树添加一个“无”
         treeSelectData.value.unshift({id: 0, name: '无'});
+        setTimeout(function () {
+          //创建富文本编辑器，不然js获取不到这个元素
+          const editor = new E('#content');
+          editor.create();
+        }, 100);
       };
 
       /**
@@ -171,6 +183,11 @@
         treeSelectData.value = Tool.copy(level1.value);
         //为树添加一个“无”
         treeSelectData.value.unshift({id: 0, name: '无'});
+        setTimeout(function () {
+          //创建富文本编辑器，不然js获取不到这个元素
+          const editor = new E('#content');
+          editor.create();
+        }, 100);
       };
 
       /**
@@ -311,7 +328,6 @@
       };
 
       onMounted(() => {
-        // handleQueryDoc();
         handleQuery();
       });
 
