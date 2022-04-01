@@ -73,17 +73,7 @@
         >
         </a-tree-select>
       </a-form-item>
-      <a-form-item label="父文档">
-        <a-select
-                ref="select"
-                v-model:value="doc.parent"
-        >
-          <a-select-option value="0">无</a-select-option>
-          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id === c.id">
-            {{c.name}}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
+
       <a-form-item label="顺序">
         <a-input v-model:value="doc.sort" />
       </a-form-item>
@@ -186,7 +176,8 @@
        * 删除
        */
       const handleDelete = (id: number) => {
-        axios.delete("/doc/delete/" + id).then((response) => {
+        getDeleteIds(level1.value, id);
+        axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
           const data = response.data;
           if(data.success) {
             handleQuery();
@@ -214,6 +205,33 @@
             const children = node.children;
             if (Tool.isNotEmpty(children)){
               setDisable(children, id);
+            }
+          }
+        }
+      };
+
+      const ids: Array<string> = [];
+
+      /**
+       * 查找整根树枝
+       */
+      const getDeleteIds = (treeSelectData: any, id: any) => {
+        for(let i = 0; i < treeSelectData.length; i ++){
+          const node = treeSelectData[i];
+          if(node.id === id) {
+            //将目标id放入结果集ids
+            ids.push(id);
+
+            const children = node.children;
+            if (Tool.isNotEmpty(children)){
+              for(let j = 0; j < children.length; j ++){
+                getDeleteIds(children, children[j].id);
+              }
+            }
+          } else {
+            const children = node.children;
+            if (Tool.isNotEmpty(children)){
+              getDeleteIds(children, id);
             }
           }
         }
