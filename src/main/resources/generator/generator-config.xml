@@ -46,8 +46,8 @@
 <!--         这个可以不写：domainObjectName="Ebook", 不用重新生成的就可以注释掉-->
 <!--        <table tableName="ebook"/>-->
 <!--        <table tableName="category"/>-->
-        <table tableName="doc"/>
-        <!--<table tableName="content"/>-->
+<!--        <table tableName="doc"/>-->
+        <table tableName="content"/>
         <!--<table tableName="user"/>-->
 <!--        <table tableName="ebook_snapshot"/>-->
     </context>
