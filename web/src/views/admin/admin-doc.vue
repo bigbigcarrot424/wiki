@@ -41,7 +41,7 @@
                     title="删除后不可恢复，确认删除？"
                     ok-text="是"
                     cancel-text="否"
-                    @confirm="handleDelete(record.id)"
+                    @confirm="showConfirm(record)"
             >
               <a-button type="danger">
                 删除
@@ -82,11 +82,12 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, ref } from 'vue';
+  import { defineComponent, onMounted, ref, createVNode } from 'vue';
   import axios from 'axios';
-  import { message } from 'ant-design-vue';
+  import {message, Modal} from 'ant-design-vue';
   import {Tool} from "@/util/tool";
   import {useRoute} from "vue-router";
+  import {ExclamationCircleOutlined} from "@ant-design/icons-vue/lib";
 
   export default defineComponent({
     name: 'AdminDoc',
@@ -186,6 +187,27 @@
       };
 
       /**
+       * 弹出二次确认框
+       */
+      const showConfirm = (record: any) => {
+        names.splice(0,names.length);
+        getDeleteNames(level1.value, record.id);
+        console.log(names);
+        Modal.confirm({
+          title: '确定要删除这些文档,包括[' + names + ']?',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: createVNode('div', { style: 'color:red;' }, '该文档与其子文档都会被删除'),
+          onOk() {
+            handleDelete(record.id)
+          },
+          onCancel() {
+            console.log('Cancel');
+          },
+          class: 'test',
+        });
+      };
+
+      /**
        * 将某节点及其子孙节点全部置为disabled
        */
       const setDisable = (treeSelectData: any, id: any) => {
@@ -236,6 +258,34 @@
           }
         }
       };
+      /**
+       * 查找待删除的名称
+       */
+
+      const names: Array<string> = [];
+      const getDeleteNames = (treeSelectData: any, id: any) => {
+        // 清空数组，清空上一次的查询，因为这是个递归函数，会自己调用自己，因此不能在函数入口简单的写一个清空
+
+        for(let i = 0; i < treeSelectData.length; i ++){
+          const node = treeSelectData[i];
+          if(node.id === id) {
+            //将目标name放入结果集names
+            names.push(node.name);
+
+            const children = node.children;
+            if (Tool.isNotEmpty(children)){
+              for(let j = 0; j < children.length; j ++){
+                getDeleteNames(children, children[j].id);
+              }
+            }
+          } else {
+            const children = node.children;
+            if (Tool.isNotEmpty(children)){
+              getDeleteNames(children, id);
+            }
+          }
+        }
+      };
 
       const level1 = ref();
 
@@ -282,6 +332,7 @@
         handleDelete,
 
         treeSelectData,
+        showConfirm,
 
       }
     }
