@@ -99,9 +99,6 @@
       </a-row>
     </a-layout-content>
   </a-layout>
-<!--  <a-modal v-model:visible="visible" title="文档表单" @ok="handleOk" :confirm-loading="modalLoading">-->
-
-<!--  </a-modal>-->
 </template>
 
 <script lang="ts">
@@ -143,7 +140,8 @@
       // ----------- 表单 -----------
       const treeSelectData = ref();
       treeSelectData.value = [];
-      const doc = ref({});
+      const doc = ref();
+      doc.value = {}; //初始赋值一个空对象
       const showModal = () => {
         visible.value = true;
       };
@@ -151,9 +149,9 @@
 
 
 
-      const handleOk = (e: MouseEvent) => {
+      const handleSave = (e: MouseEvent) => {
         loading.value = false;
-
+        doc.value.content = editor.txt.html();
         axios.post("/doc/save", doc.value).then((response) => {
           loading.value = false;
           const data = response.data;
@@ -191,6 +189,7 @@
        *  新增
        */
       const add = (record: any) => {
+        editor.txt.html('');
         visible.value = true;
         doc.value = {ebookId: route.query.ebookId};
 
@@ -363,7 +362,6 @@
 
         visible,
         showModal,
-        handleOk,
         edit,
         doc,
         add,
@@ -371,7 +369,7 @@
 
         treeSelectData,
         showConfirm,
-        // handleSave,
+        handleSave,
 
       }
     }
