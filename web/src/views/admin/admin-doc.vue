@@ -156,7 +156,7 @@
           loading.value = false;
           const data = response.data;
           if (data.success){
-            visible.value = false;
+            message.success("保存成功！");
             //  重新加载列表
             handleQuery();
           }else {
