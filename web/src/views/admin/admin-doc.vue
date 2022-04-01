@@ -55,8 +55,23 @@
   </a-layout>
   <a-modal v-model:visible="visible" title="文档表单" @ok="handleOk" :confirm-loading="modalLoading">
     <a-form :model="doc" :label-col="labelCol" :wrapper-col="wrapperCol">
+
       <a-form-item label="名称">
         <a-input v-model:value="doc.name" />
+      </a-form-item>
+      <a-form-item label="父文档">
+        <a-tree-select
+                v-model:value="doc.parent"
+                show-search
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                placeholder="请选择父文档"
+                allow-clear
+                tree-default-expand-all
+                :tree-data="treeSelectData"
+                :replaceFields="{title: 'name', key: 'id', value: 'id'}"
+        >
+        </a-tree-select>
       </a-form-item>
       <a-form-item label="父文档">
         <a-select
@@ -115,6 +130,8 @@
 
 
       // ----------- 表单 -----------
+      const treeSelectData = ref();
+      treeSelectData.value = [];
       const doc = ref({});
       const showModal = () => {
         visible.value = true;
@@ -142,6 +159,13 @@
       const edit = (record: any) => {
         visible.value = true;
         doc.value = Tool.copy(record);
+
+        //不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
+        treeSelectData.value = Tool.copy(level1.value);
+        setDisable(treeSelectData.value, record.id);
+
+        //为树添加一个“无”
+        treeSelectData.value.unshift({id: 0, name: '无'});
       };
 
       /**
@@ -150,8 +174,15 @@
       const add = (record: any) => {
         visible.value = true;
         doc.value = {};
+
+        treeSelectData.value = Tool.copy(level1.value);
+        //为树添加一个“无”
+        treeSelectData.value.unshift({id: 0, name: '无'});
       };
 
+      /**
+       * 删除
+       */
       const handleDelete = (id: number) => {
         axios.delete("/doc/delete/" + id).then((response) => {
           const data = response.data;
@@ -159,6 +190,31 @@
             handleQuery();
           }
         });
+      };
+
+      /**
+       * 将某节点及其子孙节点全部置为disabled
+       */
+      const setDisable = (treeSelectData: any, id: any) => {
+        for(let i = 0; i < treeSelectData.length; i ++){
+          const node = treeSelectData[i];
+          if(node.id === id) {
+            console.log("disabled", node);
+            node.disabled = true;
+
+            const children = node.children;
+            if (Tool.isNotEmpty(children)){
+              for(let j = 0; j < children.length; j ++){
+                setDisable(children, children[j].id);
+              }
+            }
+          } else {
+            const children = node.children;
+            if (Tool.isNotEmpty(children)){
+              setDisable(children, id);
+            }
+          }
+        }
       };
 
       const level1 = ref();
@@ -204,6 +260,8 @@
         doc,
         add,
         handleDelete,
+
+        treeSelectData,
 
       }
     }
