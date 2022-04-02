@@ -325,7 +325,7 @@
       //这个params参数可以起任意的名字
       const handleQuery = () => {
         loading.value = true;
-        axios.get("/doc/all").then((response) => {
+        axios.get("/doc/all/" + route.query.ebookId).then((response) => {
           const data = response.data;
           loading.value = false;
           if (data.success){
