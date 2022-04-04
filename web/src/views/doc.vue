@@ -13,7 +13,7 @@
                     </a-tree>
                 </a-col>
                 <a-col :span="18">
-
+                    <div :innerHTML="html" class="wangeditor"></div>
                 </a-col>
             </a-row>
             <div class="div">
@@ -40,6 +40,7 @@
             const docs = ref();
             const level1 = ref();
             level1.value = [];
+            const html = ref();
 
 
             /**
@@ -60,14 +61,95 @@
                     })
                 };
 
+            /**
+             * 内容查询
+             */
+            const handleQueryContent = (id: number) => {
+                axios.get("/doc/find-content/" + id).then((response) => {
+                    const data = response.data;
+                    if (data.success){
+                        html.value = data.content;
+                    }else {
+                        message.error(data.message);
+                    }
+                })
+            };
+
+            const onSelect = (selectedKeys: any, info: any) => {
+                console.log('selected', selectedKeys, info);
+                if(Tool.isNotEmpty(selectedKeys)){
+                    //加载内容
+                    handleQueryContent(selectedKeys[0]);
+                }
+            }
+
+
             onMounted(() => {
                 handleQuery();
             });
 
             return {
                 handleQuery,
+                html,
+                onSelect,
                 level1,
             }
         }
     });
 </script>
+
+<style>
+    /* table 样式 */
+    .wangeditor table {
+        border-top: 1px solid #ccc;
+        border-left: 1px solid #ccc;
+    }
+    .wangeditor table td,
+    .wangeditor table th {
+        border-bottom: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        padding: 3px 5px;
+    }
+    .wangeditor table th {
+        border-bottom: 2px solid #ccc;
+        text-align: center;
+    }
+
+    /* blockquote 样式 */
+    .wangeditor blockquote {
+        display: block;
+        border-left: 8px solid #d0e5f2;
+        padding: 5px 10px;
+        margin: 10px 0;
+        line-height: 1.4;
+        font-size: 100%;
+        background-color: #f1f1f1;
+    }
+
+    /* code 样式 */
+    .wangeditor code {
+        display: inline-block;
+        *display: inline;
+        *zoom: 1;
+        background-color: #f1f1f1;
+        border-radius: 3px;
+        padding: 3px 5px;
+        margin: 0 3px;
+    }
+    .wangeditor pre code {
+        display: block;
+    }
+
+    /* ul ol 样式 */
+    .wangeditor ul, ol {
+        margin: 10px 0 10px 20px;
+    }
+
+    /*和antdv p.冲突，覆盖掉,加important可以使样式的优先级提到最高*/
+    .wangeditor blockquote p {
+        fontfamily: "YouYuan";
+        margin: 20px 10px !important;
+        font-size: 16px !important;
+        font-weight: 600;
+    }
+</style>

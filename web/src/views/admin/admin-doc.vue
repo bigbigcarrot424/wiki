@@ -91,12 +91,30 @@
             <a-form-item>
               <a-input v-model:value="doc.sort" placeholder="顺序"/>
             </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="handlePreviewContent">
+                <EyeOutlined/>内容预览
+              </a-button>
+            </a-form-item>
+
             <a-form-item label="内容">
               <div id="content"></div>
             </a-form-item>
           </a-form>
         </a-col>
       </a-row>
+      <a-drawer
+              v-model:visible="drawerVisible"
+              width="900"
+              class="custom-class"
+              style="color: red"
+              title="Basic Drawer"
+              placement="right"
+              @after-visible-change="onDrawerClose"
+              :drawerStyle="{color: 'black'}"
+      >
+        <div :innerHTML="previewHtml" class="wangeditor"></div>
+      </a-drawer>
     </a-layout-content>
   </a-layout>
 </template>
@@ -137,6 +155,18 @@
       ];
 
       const visible = ref<boolean>(false);
+
+      //------------ 富文本预览 -----------
+      const drawerVisible = ref(false);
+      const previewHtml = ref();
+      const handlePreviewContent = () => {
+        const html = editor.txt.html();
+        previewHtml.value = html;
+        drawerVisible.value = true;
+      };
+      const onDrawerClose = () => {
+        drawerVisible.value = false;
+      }
 
 
       // ----------- 表单 -----------
@@ -384,6 +414,10 @@
         treeSelectData,
         showConfirm,
         handleSave,
+
+        handlePreviewContent,
+        drawerVisible,
+        previewHtml,
 
       }
     }
