@@ -120,6 +120,8 @@
       const docs = ref();
       const loading = ref(false);
       let editor: any;
+      const treeSelectData = ref();
+      treeSelectData.value = [];
 
       const columns = [
         {
@@ -138,8 +140,6 @@
 
 
       // ----------- 表单 -----------
-      const treeSelectData = ref();
-      treeSelectData.value = [];
       const doc = ref();
       doc.value = {}; //初始赋值一个空对象
       const showModal = () => {
@@ -334,6 +334,9 @@
             level1.value = [];
             level1.value = Tool.array2Tree(docs.value, 0);
             console.log("树形结构", level1.value);
+            //加载完文档之后，将父选择框初始化
+            treeSelectData.value = Tool.copy(level1.value);
+            treeSelectData.value.unshift({id: 0, name: '无'});
           }else {
             message.error(data.message);
           }
