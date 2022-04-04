@@ -108,7 +108,7 @@
               width="900"
               class="custom-class"
               style="color: red"
-              title="Basic Drawer"
+              title="内容预览"
               placement="right"
               @after-visible-change="onDrawerClose"
               :drawerStyle="{color: 'black'}"
@@ -171,7 +171,9 @@
 
       // ----------- 表单 -----------
       const doc = ref();
-      doc.value = {}; //初始赋值一个空对象
+      doc.value = {
+        ebookId: route.query.ebookId
+      }; //初始赋值一个空对象
       const showModal = () => {
         visible.value = true;
       };
@@ -222,11 +224,6 @@
         treeSelectData.value = Tool.copy(level1.value);
         //为树添加一个“无”
         treeSelectData.value.unshift({id: 0, name: '无'});
-        // setTimeout(function () {
-        //   //创建富文本编辑器，不然js获取不到这个元素
-        //   // const editor = new E('#content');
-        //   editor.create();
-        // }, 100);
       };
 
       /**
