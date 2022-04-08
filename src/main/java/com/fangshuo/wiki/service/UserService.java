@@ -76,7 +76,9 @@ public class UserService {
             User userDB = selectByLoginName(req.getLoginName());
             if (ObjectUtils.isEmpty(userDB)){
                 // 一看到用户登陆名为空，那么就不会更新
+                //编辑的时候并不会修改密码和登陆名
                 user.setLoginName(null);
+                user.setPassword(null);
                 userMapper.updateByPrimaryKeySelective(user);
             }else {
                 //用户名已存在
