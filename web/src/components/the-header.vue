@@ -1,8 +1,11 @@
 <template>
     <a-layout-header class="header">
         <div class="logo" />
-        <a class="login-menu" @click="showLoginModal">
+        <a class="login-menu" @click="showLoginModal" v-if="!user.id">
             <span>登录</span>
+        </a>
+        <a class="login-menu" v-if="!!user.id">
+            <span>您好: {{user.name}}</span>
         </a>
         <a-menu
                 theme="dark"
@@ -50,10 +53,15 @@
     export default defineComponent({
         name: 'the-header',
         setup(){
+            // 用来登录
             const loginUser = ref({
                 loginName: "test",
                 password: "test",
             })
+            // 登陆后保存
+            const user = ref();
+            user.value = {};
+
             let loginModalVisible = ref(false);
             let loginModalLoading = ref(false);
             const showLoginModal = () => {
@@ -68,7 +76,8 @@
                     const data = response.data;
                     if(data.success){
                         loginModalVisible.value = false;
-                        message.success("登陆成功！");
+                        message.success("登录成功！");
+                        user.value = data.content;
                     } else {
                         message.error(data.message);
                     }
@@ -80,6 +89,7 @@
                 showLoginModal,
                 loginUser,
                 login,
+                user,
             }
         }
     });
