@@ -6,9 +6,10 @@ import com.fangshuo.wiki.exception.BusinessException;
 import com.fangshuo.wiki.exception.BusinessExceptionCode;
 import com.fangshuo.wiki.mapper.UserMapper;
 import com.fangshuo.wiki.req.UserQueryReq;
+import com.fangshuo.wiki.req.UserResetPasswordReq;
 import com.fangshuo.wiki.req.UserSaveReq;
-import com.fangshuo.wiki.resp.UserQueryResp;
 import com.fangshuo.wiki.resp.PageResp;
+import com.fangshuo.wiki.resp.UserQueryResp;
 import com.fangshuo.wiki.util.CopyUtil;
 import com.fangshuo.wiki.util.SnowFlake;
 import com.github.pagehelper.PageHelper;
@@ -102,4 +103,10 @@ public class UserService {
             return userList.get(0);
         }
     }
+
+    public void resetPassword(UserResetPasswordReq req){
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
+    }
 }
+

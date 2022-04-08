@@ -39,10 +39,20 @@
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
+            <a-popconfirm
+                    title="是否重置密码？（原来的密码将会丢失）"
+                    ok-text="是"
+                    cancel-text="否"
+                    @confirm="resetPassword(record)"
+            >
+              <a-button type="primary">
+                重置密码
+              </a-button>
+            </a-popconfirm>
+
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-
             <a-popconfirm
                     title="删除后不可恢复，确认删除？"
                     ok-text="是"
@@ -53,6 +63,7 @@
                 删除
               </a-button>
             </a-popconfirm>
+
 
           </a-space>
         </template>
@@ -68,6 +79,14 @@
         <a-input v-model:value="user.name" />
       </a-form-item>
       <a-form-item label="密码" v-show="!user.id">
+        <a-input v-model:value="user.password"/>
+      </a-form-item>
+    </a-form>
+  </a-modal>
+
+  <a-modal v-model:visible="resetVisible" title="重置密码" @ok="handleResetOk" :confirm-loading="resetModalLoading">
+    <a-form :model="user" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="新密码">
         <a-input v-model:value="user.password"/>
       </a-form-item>
     </a-form>
@@ -94,7 +113,6 @@
         pageSize: 3,
         total: 0
       });
-      const loading = ref(false);
 
       const columns = [
         {
@@ -117,15 +135,14 @@
       ];
 
       const visible = ref<boolean>(false);
+      const resetVisible = ref<boolean>(false);
+      const loading = ref(false);
+      const resetModalLoading = ref(false);
 
+
+      const user = ref();
 
       // ----------- 表单 -----------
-      /**
-       * 数组 [100, 101]对应：前端开发 / Vue
-       */
-      const user = ref();
-      const categoryIds = ref();
-
 
       const showModal = () => {
         visible.value = true;
@@ -156,7 +173,42 @@
       const edit = (record: any) => {
         visible.value = true;
         user.value = Tool.copy(record);
-        categoryIds.value = [user.value.category1Id, user.value.category2Id];
+      };
+
+
+
+       // -------------- 重置密码 ---------------
+
+      const showResetModal = () => {
+        resetVisible.value = true;
+      };
+
+      const handleResetOk = (e: MouseEvent) => {
+        resetModalLoading.value = false;
+        user.value.password = hexMd5(user.value.password + KEY);
+        axios.post("/user/reset-password", user.value).then((response) => {
+          resetModalLoading.value = false;
+          const data = response.data;
+          if (data.success){
+            resetVisible.value = false;
+            //  重新加载列表
+            handleQuery({
+              page: pagination.value.current,
+              size: pagination.value.pageSize,
+            });
+          }else {
+            message.error(data.message);
+          }
+        })
+      };
+
+      /**
+       * 重置密码显示
+       */
+      const resetPassword = (record: any) => {
+        resetVisible.value = true;
+        user.value = Tool.copy(record);
+        user.value.password = null;
       };
 
       /**
@@ -166,6 +218,10 @@
         visible.value = true;
         user.value = {};
       };
+
+      /**
+       * 删除
+       */
 
       const handleDelete = (id: number) => {
         axios.delete("/user/delete/" + id).then((response) => {
@@ -208,20 +264,6 @@
         })
       };
 
-      const level1 = ref();
-      let categorys: any;
-
-      const getCategoryName = (cid: number) => {
-        let result = "";
-        if(categorys){
-          categorys.forEach((item: any) => {
-            if(item.id === cid){
-              result = item.name;
-            }
-          });
-        }
-        return result;
-      };
 
       /**
        * 表格点击页码时触发
@@ -254,8 +296,11 @@
         user,
         add,
         handleDelete,
-        level1,
 
+        resetVisible,
+        handleResetOk,
+        resetModalLoading,
+        resetPassword,
       }
     }
   });
