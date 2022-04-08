@@ -75,7 +75,9 @@ public class UserService {
             //更新
             User userDB = selectByLoginName(req.getLoginName());
             if (ObjectUtils.isEmpty(userDB)){
-                userMapper.updateByPrimaryKey(user);
+                // 一看到用户登陆名为空，那么就不会更新
+                user.setLoginName(null);
+                userMapper.updateByPrimaryKeySelective(user);
             }else {
                 //用户名已存在
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
