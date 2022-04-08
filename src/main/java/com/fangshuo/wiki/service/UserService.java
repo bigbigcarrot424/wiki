@@ -5,10 +5,12 @@ import com.fangshuo.wiki.domain.UserExample;
 import com.fangshuo.wiki.exception.BusinessException;
 import com.fangshuo.wiki.exception.BusinessExceptionCode;
 import com.fangshuo.wiki.mapper.UserMapper;
+import com.fangshuo.wiki.req.UserLoginReq;
 import com.fangshuo.wiki.req.UserQueryReq;
 import com.fangshuo.wiki.req.UserResetPasswordReq;
 import com.fangshuo.wiki.req.UserSaveReq;
 import com.fangshuo.wiki.resp.PageResp;
+import com.fangshuo.wiki.resp.UserLoginResp;
 import com.fangshuo.wiki.resp.UserQueryResp;
 import com.fangshuo.wiki.util.CopyUtil;
 import com.fangshuo.wiki.util.SnowFlake;
@@ -107,6 +109,25 @@ public class UserService {
     public void resetPassword(UserResetPasswordReq req){
         User user = CopyUtil.copy(req, User.class);
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    public UserLoginResp login(UserLoginReq req){
+        User userDB = selectByLoginName(req.getLoginName());
+        if(ObjectUtils.isEmpty(userDB)){
+            // 用户名不存在
+            LOG.info("用户名不存在，{}", req.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        } else {
+            if (userDB.getPassword().equals(req.getPassword())){
+                // 登陆成功
+                UserLoginResp loginResp = CopyUtil.copy(userDB, UserLoginResp.class);
+                return loginResp;
+            } else {
+                // 密码不对
+                LOG.info("密码不对，输入密码：{}，用户名密码：{}", req.getLoginName(), userDB.getPassword());
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
     }
 }
 
