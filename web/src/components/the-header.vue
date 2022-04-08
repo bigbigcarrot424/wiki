@@ -1,6 +1,9 @@
 <template>
     <a-layout-header class="header">
         <div class="logo" />
+        <a class="login-menu" @click="showLoginModal">
+            <span>登录</span>
+        </a>
         <a-menu
                 theme="dark"
                 mode="horizontal"
@@ -21,14 +24,14 @@
             <a-menu-item key="/about">
                 <router-link to="/about">关于我们</router-link>
             </a-menu-item>
-            <a class="login-menu" @click="showLoginModal">
-                <span>登录</span>
-            </a>
+
         </a-menu>
+
+
         <a-modal v-model:visible="loginModalVisible" title="登录" @ok="login" :confirm-loading="loginModalLoading">
             <a-form :model="loginUser" :label-col="labelCol" :wrapper-col="wrapperCol">
                 <a-form-item label="登录名">
-                    <a-input v-model:value="loginUser.loginName" :disabled="!!user.id"/>
+                    <a-input v-model:value="loginUser.loginName"/>
                 </a-form-item>
                 <a-form-item label="密码">
                     <a-input v-model:value="loginUser.password" type="password"/>
@@ -40,7 +43,10 @@
 
 <script lang="ts">
     import { defineComponent, ref } from 'vue';
+    import { message } from "ant-design-vue";
     import axios from "axios";
+    declare let hexMd5: any;
+    declare let KEY: any;
     export default defineComponent({
         name: 'the-header',
         setup(){
@@ -56,9 +62,16 @@
 
             const login = () => {
                 loginModalLoading.value = true;
-                axios.post("/user/login",loginUser.value).then((response) => {
+                loginUser.value.password = hexMd5(loginUser.value.password + KEY);
+                axios.post("/user/login", loginUser.value).then((response) => {
                     loginModalLoading.value = false;
-
+                    const data = response.data;
+                    if(data.success){
+                        loginModalVisible.value = false;
+                        message.success("登陆成功！");
+                    } else {
+                        message.error(data.message);
+                    }
                 })
             }
             return {
