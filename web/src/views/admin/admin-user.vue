@@ -130,8 +130,6 @@
 
       const handleOk = (e: MouseEvent) => {
         loading.value = false;
-        user.value.category1Id = categoryIds.value[0];
-        user.value.category2Id = categoryIds.value[1];
         axios.post("/user/save", user.value).then((response) => {
           loading.value = false;
           const data = response.data;

@@ -1,6 +1,8 @@
 package com.fangshuo.wiki.controller;
 
 //import com.fangshuo.wiki.exception.BusinessException;
+
+import com.fangshuo.wiki.exception.BusinessException;
 import com.fangshuo.wiki.resp.CommonResp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +38,7 @@ public class ControllerExceptionHandler {
      * 校验异常统一处理
      * @param e
      * @return
-     *//*
+     */
     @ExceptionHandler(value = BusinessException.class)
     @ResponseBody
     public CommonResp validExceptionHandler(BusinessException e) {
@@ -45,7 +47,7 @@ public class ControllerExceptionHandler {
         commonResp.setSuccess(false);
         commonResp.setMessage(e.getCode().getDesc());
         return commonResp;
-    }*/
+    }
 
     /**
      * 校验异常统一处理
