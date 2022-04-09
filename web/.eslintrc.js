@@ -19,6 +19,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-unused-vars': 0,
     'vue/multi-word-component-names': 0,
+    '@typescript-eslint/ban-ts-comment': 0,
 
   }
 }
