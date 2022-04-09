@@ -1,6 +1,6 @@
 <template>
     <a-layout-footer :style="{textAlign: 'center'}">
-        Ant Design ©2018 Created by Fang Shuo
+        Ant Design ©2018 Created by Fang Shuo{{user.name}}
     </a-layout-footer>
 
 <!--    <a-layout-footer :style="{textAlign: 'center', position: 'fixed', zIndex: 100, width: '100%',  margin: '870px 24px 16px 0'}">-->
@@ -9,8 +9,15 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent } from 'vue';
+    import { defineComponent, computed } from 'vue';
+    import store from "@/store";
     export default defineComponent({
         name: 'the-footer',
+        setup(){
+            const user = computed(() => store.state.user);
+            return {
+                user,
+            }
+        }
     });
 </script>
