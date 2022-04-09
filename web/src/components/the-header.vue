@@ -80,8 +80,12 @@
                 loginModalVisible.value = true;
             }
 
+            // 这里还需要在前端增加登录校验，因为经过加密之后才会送到后端，不论输入的密码多少位，最后的密码一定是32位的
             const login = () => {
                 loginModalLoading.value = true;
+                // if (loginUser.value.password.toString().length > 32 || loginUser.value.password.toString().length < 6){
+                //     message.error("密码长度必须在6-32位之间");
+                // }else {
                 loginUser.value.password = hexMd5(loginUser.value.password + KEY);
                 axios.post("/user/login", loginUser.value).then((response) => {
                     loginModalLoading.value = false;
@@ -94,6 +98,7 @@
                         message.error(data.message);
                     }
                 })
+                // }
             }
 
             const logout = () => {
