@@ -1,6 +1,6 @@
 <template>
     <a-layout-footer :style="{textAlign: 'center'}">
-        Ant Design ©2018 Created by Fang Shuo{{user.name}}
+        Ant Design ©2018 Created by Fang Shuo<span v-show="user.id">欢迎，{{user.name}}</span>
     </a-layout-footer>
 
 <!--    <a-layout-footer :style="{textAlign: 'center', position: 'fixed', zIndex: 100, width: '100%',  margin: '870px 24px 16px 0'}">-->
