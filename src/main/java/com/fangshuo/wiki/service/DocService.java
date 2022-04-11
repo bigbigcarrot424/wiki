@@ -5,6 +5,7 @@ import com.fangshuo.wiki.domain.Doc;
 import com.fangshuo.wiki.domain.DocExample;
 import com.fangshuo.wiki.mapper.ContentMapper;
 import com.fangshuo.wiki.mapper.DocMapper;
+import com.fangshuo.wiki.mapper.DocMapperCust;
 import com.fangshuo.wiki.req.DocQueryReq;
 import com.fangshuo.wiki.req.DocSaveReq;
 import com.fangshuo.wiki.resp.DocQueryResp;
@@ -27,6 +28,9 @@ public class DocService {
 
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private DocMapperCust docMapperCust;
 
     @Resource
     private ContentMapper contentMapper;
@@ -79,6 +83,8 @@ public class DocService {
         Content content = CopyUtil.copy(req, Content.class);
         if (ObjectUtils.isEmpty(req.getId())){
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
@@ -106,10 +112,13 @@ public class DocService {
 
     public String findContent(Long id){
         Content content = contentMapper.selectByPrimaryKey(id);
+        //文档阅读数加一
+        docMapperCust.increaseViewCount(id);
         if(ObjectUtils.isEmpty(content)){
             return "";
         }else {
             return content.getContent();
         }
     }
+
 }
