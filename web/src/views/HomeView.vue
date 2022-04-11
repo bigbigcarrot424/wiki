@@ -35,9 +35,17 @@
           <template #renderItem="{ item }">
             <a-list-item key="item.name">
               <template #actions>
-                <span v-for="{ type, text } in actions" :key="type">
-                  <component :is="type" style="margin-right: 8px" />
-                  {{ text }}
+                <span>
+                  <component :is="'FileOutlined'" style="margin-right: 8px" />
+                  {{ item.docCount }}
+                </span>
+                <span>
+                  <component :is="'EyeOutlined'" style="margin-right: 8px" />
+                  {{ item.viewCount }}
+                </span>
+                <span>
+                  <component :is="'LikeOutlined'" style="margin-right: 8px" />
+                  {{ item.voteCount }}
                 </span>
               </template>
               <a-list-item-meta :description="item.description">
@@ -106,11 +114,6 @@ export default defineComponent({
       },
       pageSize: 3,
     };
-    const actions: Record<string, string>[] = [
-      { type: 'StarOutlined', text: '156' },
-      { type: 'LikeOutlined', text: '156' },
-      { type: 'MessageOutlined', text: '2' },
-    ];
 
     const ebooks = ref();
     const ebooks1 = reactive({books:[]})
@@ -153,7 +156,6 @@ export default defineComponent({
     return{
       listData,
       pagination,
-      actions,
       ebooks,
       books:toRef(ebooks1, 'books'),
       handleQueryCategory,
