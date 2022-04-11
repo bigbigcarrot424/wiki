@@ -140,6 +140,8 @@
       let editor: any;
       const treeSelectData = ref();
       treeSelectData.value = [];
+      const level1 = ref();
+      level1.value = [];
 
       const columns = [
         {
@@ -221,7 +223,11 @@
         visible.value = true;
         doc.value = {ebookId: route.query.ebookId};
 
-        treeSelectData.value = Tool.copy(level1.value);
+        if (level1.value !== null){
+          treeSelectData.value = Tool.copy(level1.value);
+        }else {
+          treeSelectData.value = [];
+        }
         //为树添加一个“无”
         treeSelectData.value.unshift({id: 0, name: '无'});
       };
@@ -343,8 +349,7 @@
         }
       };
 
-      const level1 = ref();
-      level1.value = [];
+
 
       /**
        * 数据查询
@@ -361,8 +366,14 @@
             level1.value = [];
             level1.value = Tool.array2Tree(docs.value, 0);
             console.log("树形结构", level1.value);
+            // console.log("level1长度", level1.value.length);
             //加载完文档之后，将父选择框初始化
-            treeSelectData.value = Tool.copy(level1.value);
+            if (level1.value.length === 0){
+              treeSelectData.value = [];
+            }else {
+              treeSelectData.value = Tool.copy(level1.value);
+            }
+            // console.log("treeSelectData:", treeSelectData);
             treeSelectData.value.unshift({id: 0, name: '无'});
           }else {
             message.error(data.message);
