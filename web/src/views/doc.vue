@@ -15,6 +15,14 @@
                     </a-tree>
                 </a-col>
                 <a-col :span="18">
+                    <div>
+                        <h2>{{doc.name}}</h2>
+                        <div>
+                            <span>阅读数：{{doc.viewCount}}</span> &nbsp; &nbsp;
+                            <span>点赞数：{{doc.voteCount}}</span>
+                        </div>
+                        <a-divider style="height: 2px; background-color: #7cb305" />
+                    </div>
                     <div :innerHTML="html" class="wangeditor"></div>
                 </a-col>
             </a-row>
@@ -42,6 +50,9 @@
             const html = ref();
             const defaultSelectedKeys = ref();
             defaultSelectedKeys.value = [];
+            //当前选中的文档
+            const doc = ref();
+            doc.value = {};
 
             /**
              * 内容查询
@@ -73,6 +84,8 @@
                                 //这里选中了只是有选中的状态，内容需要自己再去调用一下才能出来
                                 defaultSelectedKeys.value = [level1.value[0].id];
                                 handleQueryContent(defaultSelectedKeys.value);
+                                //初始显示文档信息
+                                doc.value = level1.value[0];
                             }
                             console.log("树形结构", level1.value);
                         }else {
@@ -86,6 +99,8 @@
             const onSelect = (selectedKeys: any, info: any) => {
                 console.log('selected', selectedKeys, info);
                 if(Tool.isNotEmpty(selectedKeys)){
+                    //选中某一节点时，加载该节点的文档信息
+                    doc.value = info.selectedNodes[0].props;
                     //加载内容
                     handleQueryContent(selectedKeys[0]);
                 }
@@ -102,6 +117,7 @@
                 onSelect,
                 level1,
                 defaultSelectedKeys,
+                doc,
             }
         }
     });
