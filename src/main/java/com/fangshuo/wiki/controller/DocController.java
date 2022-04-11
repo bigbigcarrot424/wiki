@@ -36,6 +36,13 @@ public class DocController {
         return resp;
     }
 
+    @GetMapping("/vote/{id}")
+    public CommonResp vote(@PathVariable Long id){
+        CommonResp<Boolean> resp = new CommonResp<>();
+        docService.vote(id);
+        return resp;
+    }
+
     @PostMapping("/save")
     // 使用post请求时，前面要加上@RequestBody，这个注解对应的是json方式的提交，需要加这个@RequestBody才能接收到。
     // 两种不同方式的表单提交：1. application/json 2. application/x-www-form-urlencoded 这个是表单方式的提交

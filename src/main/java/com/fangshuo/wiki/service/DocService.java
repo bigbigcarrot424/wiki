@@ -64,6 +64,7 @@ public class DocService {
         pageResp.setList(respList);
         return pageResp;
     }
+
     public List<DocQueryResp> all(Long ebookId){
         DocExample docExample = new DocExample();
         docExample.createCriteria().andEbookIdEqualTo(ebookId);
@@ -73,6 +74,10 @@ public class DocService {
         List<DocQueryResp> respList = CopyUtil.copyList(docList, DocQueryResp.class);
 
         return respList;
+    }
+
+    public void vote(Long id){
+        docMapperCust.increaseVoteCount(id);
     }
 
     /**
