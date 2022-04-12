@@ -13,7 +13,6 @@
     import store from "@/store";
     import { Tool } from "@/util/tool";
     import { notification }  from "ant-design-vue";
-    import { SmileOutlined } from '@ant-design/icons-vue';
 
     export default defineComponent({
         name: 'the-footer',
