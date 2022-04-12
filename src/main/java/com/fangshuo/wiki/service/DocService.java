@@ -16,6 +16,7 @@ import com.fangshuo.wiki.util.CopyUtil;
 import com.fangshuo.wiki.util.RedisUtil;
 import com.fangshuo.wiki.util.RequestContext;
 import com.fangshuo.wiki.util.SnowFlake;
+import com.fangshuo.wiki.websocket.WebSocketServer;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -44,6 +45,9 @@ public class DocService {
 
     @Resource
     private RedisUtil redisUtil;
+
+    @Resource
+    private WebSocketServer webSocketServer;
 
     public PageResp<DocQueryResp> list(DocQueryReq req){
         DocExample docExample = new DocExample();
@@ -91,6 +95,9 @@ public class DocService {
         } else {
            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
+        // 推送消息
+        Doc docDb = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【" + docDb.getName() + "】被点赞!");
     }
 
     /**
