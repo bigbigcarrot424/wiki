@@ -3,8 +3,6 @@ package com.fangshuo.wiki.service;
 import com.fangshuo.wiki.domain.Content;
 import com.fangshuo.wiki.domain.Doc;
 import com.fangshuo.wiki.domain.DocExample;
-import com.fangshuo.wiki.exception.BusinessException;
-import com.fangshuo.wiki.exception.BusinessExceptionCode;
 import com.fangshuo.wiki.mapper.ContentMapper;
 import com.fangshuo.wiki.mapper.DocMapper;
 import com.fangshuo.wiki.mapper.DocMapperCust;
@@ -18,6 +16,7 @@ import com.fangshuo.wiki.util.RequestContext;
 import com.fangshuo.wiki.util.SnowFlake;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -49,6 +48,9 @@ public class DocService {
 
     @Resource
     private WsService wsService;
+
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
 
 
     public PageResp<DocQueryResp> list(DocQueryReq req){
@@ -92,15 +94,16 @@ public class DocService {
     public void vote(Long id){
         // 远程IP+doc.id作为key，24小时内不能重复
         String ip = RequestContext.getRemoteAddr();
-        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 3600 * 24)) {
+//        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 3600 * 24)) {
             docMapperCust.increaseVoteCount(id);
-        } else {
-           throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
-        }
+//        } else {
+//           throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+//        }
 
         Doc docDb = docMapper.selectByPrimaryKey(id);
         String logId = MDC.get("LOG_ID");
-        wsService.sendInfo("【" + docDb.getName() + "】被点赞!", logId);
+//        wsService.sendInfo("【" + docDb.getName() + "】被点赞!", logId);
+        rocketMQTemplate.convertAndSend("VOTE_TOPIC", "【" + docDb.getName() + "】被点赞!");
     }
 
     /**
