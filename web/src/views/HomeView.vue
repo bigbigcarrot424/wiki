@@ -30,7 +30,8 @@
       <a-layout-content
               :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
-        <div class="welcome" v-show="isShowWelcome">欢迎使用fangshuo知识库</div>
+<!--        <div class="welcome" v-show="isShowWelcome">欢迎使用fangshuo知识库</div>-->
+        <the-welcome></the-welcome>
         <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :data-source="ebooks" :grid="{ gutter: 16, column: 3 }">
           <template #renderItem="{ item }">
             <a-list-item key="item.name">
@@ -71,7 +72,8 @@ import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-v
 import { defineComponent, onMounted, reactive, ref, toRef } from 'vue';
 import { message } from 'ant-design-vue';
 import {Tool} from "@/util/tool";
-import axios from 'axios'
+import axios from 'axios';
+import TheWelcome from '@/components/the-welcome.vue';
 
 const listData: Record<string, string>[] = [];
 
@@ -81,6 +83,7 @@ export default defineComponent({
     StarOutlined,
     LikeOutlined,
     MessageOutlined,
+    TheWelcome,
   },
   name: 'HomeView',
   setup(){
